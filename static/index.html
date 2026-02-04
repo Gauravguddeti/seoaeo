@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO + AEO Analyzer - Analyze Your Website</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>SEO + AEO Analyzer</h1>
+            <p class="tagline">Fast, honest analysis for search engines and AI</p>
+            <div style="display: flex; gap: 10px; justify-content: center; margin: 10px 0;">
+                <a href="/static/compare.html" class="btn-secondary">⚖️ Compare URLs</a>
+                <a href="/static/history.html" class="btn-secondary">📊 View History</a>
+            </div>
+        </header>
+
+        <!-- Input Section -->
+        <section id="input-section" class="section">
+            <div class="input-container">
+                <input 
+                    type="url" 
+                    id="url-input" 
+                    placeholder="https://example.com" 
+                    autocomplete="url"
+                    required
+                />
+                <button id="analyze-btn" class="btn-primary">Analyze</button>
+            </div>
+            <p class="hint">Enter any website URL to get SEO and AEO scores</p>
+        </section>
+
+        <!-- Loading Section -->
+        <section id="loading-section" class="section hidden">
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <h2>Analyzing your website...</h2>
+                <p id="progress-text" class="progress-text">Starting analysis...</p>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="section hidden">
+            <!-- Visual Analysis Toggle -->
+            <div class="visual-toggle">
+                <button id="toggle-visual" class="btn-toggle active">📊 Visual Mode</button>
+                <button id="toggle-list" class="btn-toggle">📋 List Mode</button>
+            </div>
+            <!-- Page Info -->
+            <div class="page-info">
+                <h2 id="page-title"></h2>
+                <p class="analyzed-url"><strong>URL:</strong> <span id="analyzed-url"></span></p>
+                <p class="word-count"><strong>Content:</strong> <span id="word-count"></span> words</p>
+            </div>
+
+            <!-- Scores -->
+            <div class="scores-container">
+                <!-- SEO Score -->
+                <div class="score-card">
+                    <h3>SEO Score</h3>
+                    <div class="score-display">
+                        <div class="score-number" id="seo-score">0</div>
+                        <div class="score-grade" id="seo-grade">F</div>
+                    </div>
+                    <p class="score-explanation" id="seo-explanation"></p>
+                </div>
+
+                <!-- AEO Score -->
+                <div class="score-card">
+                    <h3>AEO Score</h3>
+                    <div class="score-display">
+                        <div class="score-number" id="aeo-score">0</div>
+                        <div class="score-grade" id="aeo-grade">F</div>
+                    </div>
+                    <p class="score-explanation" id="aeo-explanation"></p>
+                </div>
+            </div>
+
+            <!-- Top Issues (AEO) -->
+            <div class="top-issues" id="top-issues-container">
+                <h3>🚫 Top Reasons AI Won't Pick This Page</h3>
+                <div id="top-issues-list"></div>
+            </div>
+
+            <!-- Before/After Example -->
+            <div class="before-after" id="before-after-container">
+                <h3>📝 Content Rewrite Example</h3>
+                <div class="example-content">
+                    <div class="before">
+                        <h4>Before</h4>
+                        <p id="before-text"></p>
+                    </div>
+                    <div class="after">
+                        <h4>After</h4>
+                        <p id="after-text"></p>
+                    </div>
+                </div>
+                <p class="what-changed" id="what-changed"></p>
+            </div>
+
+            <!-- Visual Preview Section -->
+            <div id="visual-preview" class="visual-section">
+                <div class="preview-card">
+                    <h3>🌐 Your Page with Issues Highlighted</h3>
+                    <div class="preview-container">
+                        <div class="preview-sidebar">
+                            <h4>Issues Found:</h4>
+                            <div id="issue-markers"></div>
+                        </div>
+                        <div class="preview-iframe-wrapper">
+                            <iframe id="page-preview" sandbox="allow-same-origin allow-scripts"></iframe>
+                            <div id="issue-overlays" class="overlay-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Dashboard -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h4>📊 Score Breakdown</h4>
+                        <canvas id="score-chart"></canvas>
+                    </div>
+                    <div class="metric-card">
+                        <h4>✅ Check Status</h4>
+                        <canvas id="status-chart"></canvas>
+                    </div>
+                    <div class="metric-card">
+                        <h4>🔑 Keyword Placement</h4>
+                        <canvas id="keyword-chart"></canvas>
+                    </div>
+                    <div class="metric-card">
+                        <h4>📝 Content Stats</h4>
+                        <div id="content-metrics" class="mini-stats"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Checks -->
+            <div class="checks-section">
+                <h3>SEO Analysis Details</h3>
+                <div id="seo-checks"></div>
+            </div>
+
+            <!-- AEO Checks -->
+            <div class="checks-section">
+                <h3>AEO Analysis Details</h3>
+                <div id="aeo-checks"></div>
+            </div>
+
+            <!-- Visual Preview Section -->
+            <div id="visual-preview" class="visual-section">
+                <div class="preview-card">
+                    <h3>🌐 Page Preview with Issues Highlighted</h3>
+                    <div class="preview-container">
+                        <div class="preview-sidebar">
+                            <h4>Issues Found:</h4>
+                            <div id="issue-markers"></div>
+                        </div>
+                        <div class="preview-frame">
+                            <iframe id="page-preview" sandbox="allow-same-origin"></iframe>
+                            <div id="issue-overlays"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Dashboard -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h4>Score Breakdown</h4>
+                        <canvas id="score-chart" height="200"></canvas>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Check Status Distribution</h4>
+                        <canvas id="status-chart" height="200"></canvas>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Keyword Placement</h4>
+                        <canvas id="keyword-chart" height="200"></canvas>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Content Metrics</h4>
+                        <div id="content-metrics" class="mini-stats"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keywords Section -->
+            <div class="checks-section" id="list-view">
+                <h3>🔑 Keyword Analysis</h3>
+                <div id="keywords-container"></div>
+            </div>
+
+            <!-- Action Checklist -->
+            <div class="action-checklist">
+                <h3>✅ Action Checklist</h3>
+                <div id="checklist-items"></div>
+            </div>
+
+            <!-- Analyze Another -->
+            <div class="analyze-another">
+                <button id="analyze-another-btn" class="btn-secondary">Analyze Another URL</button>
+                <button onclick="exportJSON()" class="btn-export">📥 Export JSON</button>
+                <button onclick="exportTXT()" class="btn-export">📄 Export Report</button>
+            </div>
+        </section>
+
+        <!-- Error Section -->
+        <section id="error-section" class="section hidden">
+            <div class="error-container">
+                <h2>⚠️ Analysis Failed</h2>
+                <p id="error-message"></p>
+                <button id="try-again-btn" class="btn-secondary">Try Again</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with clarity, not hype. AI assists, rules decide.</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

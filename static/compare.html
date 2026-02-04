@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitor Comparison - SEO + AEO Analyzer</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/compare.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🔍 Competitor Comparison</h1>
+            <p>Analyze multiple URLs side-by-side to identify content gaps</p>
+            <a href="/" class="btn-secondary">← Back to Single Analysis</a>
+        </header>
+
+        <!-- Input Section -->
+        <section id="input-section" class="section">
+            <div class="compare-form">
+                <h3>Enter URLs to Compare (2-4 sites)</h3>
+                <div class="url-inputs">
+                    <input type="url" id="url1" class="url-input" placeholder="https://example.com/page1" required>
+                    <input type="url" id="url2" class="url-input" placeholder="https://example.com/page2" required>
+                    <input type="url" id="url3" class="url-input" placeholder="https://example.com/page3 (optional)">
+                    <input type="url" id="url4" class="url-input" placeholder="https://example.com/page4 (optional)">
+                </div>
+                <button id="compare-btn" class="btn-primary">Compare URLs</button>
+            </div>
+        </section>
+
+        <!-- Loading Section -->
+        <section id="loading-section" class="section hidden">
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <h2>Analyzing websites...</h2>
+                <p id="progress-text">Initializing comparison...</p>
+                <div id="progress-status"></div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="section hidden">
+            <h2>Comparison Results</h2>
+            
+            <!-- Score Comparison -->
+            <div class="comparison-card">
+                <h3>📊 Score Comparison</h3>
+                <div id="score-comparison"></div>
+            </div>
+
+            <!-- Feature Comparison Table -->
+            <div class="comparison-card">
+                <h3>🔍 Feature Comparison</h3>
+                <div id="feature-comparison"></div>
+            </div>
+
+            <!-- Keyword Gap Analysis -->
+            <div class="comparison-card">
+                <h3>🔑 Keyword Gap Analysis</h3>
+                <div id="keyword-gaps"></div>
+            </div>
+
+            <!-- Winner Analysis -->
+            <div class="comparison-card">
+                <h3>🏆 Best Practices Identified</h3>
+                <div id="winner-analysis"></div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="comparison-card">
+                <h3>💡 Improvement Opportunities</h3>
+                <div id="comparison-recommendations"></div>
+            </div>
+
+            <div class="analyze-another">
+                <button id="compare-another-btn" class="btn-secondary">Compare Again</button>
+                <button onclick="exportComparison()" class="btn-export">📥 Export Comparison</button>
+            </div>
+        </section>
+
+        <!-- Error Section -->
+        <section id="error-section" class="section hidden">
+            <div class="error-container">
+                <h2>⚠️ Comparison Failed</h2>
+                <p id="error-message"></p>
+                <button id="try-again-btn" class="btn-secondary">Try Again</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with clarity, not hype. AI assists, rules decide.</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/compare.js"></script>
+</body>
+</html>

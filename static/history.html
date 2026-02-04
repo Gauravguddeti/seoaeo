@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis History - SEO + AEO Analyzer</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/history.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>📊 Analysis History</h1>
+            <p>Track your SEO/AEO scores over time</p>
+            <a href="/" class="btn-secondary">← Back to Analyzer</a>
+        </header>
+
+        <!-- Loading Section -->
+        <section id="loading-section" class="section">
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <p>Loading history...</p>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section id="history-section" class="section hidden">
+            <!-- URL List -->
+            <div class="history-card">
+                <h3>Analyzed URLs</h3>
+                <div id="url-list"></div>
+            </div>
+
+            <!-- Trends Section (shown when URL selected) -->
+            <div id="trends-section" class="hidden">
+                <div class="history-card">
+                    <h3>Score Trends for <span id="selected-url"></span></h3>
+                    <div id="trend-charts"></div>
+                </div>
+
+                <div class="history-card">
+                    <h3>Analysis History</h3>
+                    <div id="history-timeline"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Empty State -->
+        <section id="empty-section" class="section hidden">
+            <div class="empty-state">
+                <h2>📭 No History Yet</h2>
+                <p>Start analyzing URLs to build your history</p>
+                <a href="/" class="btn-primary">Analyze First URL</a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with clarity, not hype. AI assists, rules decide.</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/history.js"></script>
+</body>
+</html>
