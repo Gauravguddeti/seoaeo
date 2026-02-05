@@ -40,7 +40,7 @@ class WebCrawler:
         except requests.RequestException as e:
             raise Exception(f"Failed to fetch {url}: {str(e)}")
     
-    def extract_content(self, html: str, url: str) -> Dict:
+    def extract_content(self, html: str, url: str, response_headers: Optional[Dict] = None) -> Dict:
         """Extract all relevant content from HTML"""
         soup = BeautifulSoup(html, 'lxml')
         
@@ -63,6 +63,9 @@ class WebCrawler:
             'images': self._extract_images(soup),
             'open_graph': self._extract_open_graph(soup),
             'schema_markup': self._extract_schema(soup),
+            'headers': response_headers or {},
+            'viewport': self._extract_viewport(soup),
+            'html_raw': html,  # Keep raw HTML for mixed content check
         }
         
         return content
@@ -252,6 +255,24 @@ class WebCrawler:
             'types': list(set(schema_types))
         }
     
+    def _extract_viewport(self, soup: BeautifulSoup) -> Dict:
+        """Extract viewport meta tag for mobile-friendliness check"""
+        viewport = soup.find('meta', attrs={'name': 'viewport'})
+        if viewport:
+            content = viewport.get('content', '')
+            return {
+                'exists': True,
+                'content': content,
+                'has_width': 'width=' in content.lower(),
+                'has_scale': 'scale=' in content.lower()
+            }
+        return {
+            'exists': False,
+            'content': '',
+            'has_width': False,
+            'has_scale': False
+        }
+    
     def find_content_page(self, soup: BeautifulSoup, homepage_url: str) -> Optional[str]:
         """Find the most promising content page to analyze"""
         # Look for blog posts, articles, or pages with substantial content
@@ -296,7 +317,9 @@ class WebCrawler:
         # Crawl homepage
         try:
             response = self.fetch_page(self.url)
-            content = self.extract_content(response.text, self.url)
+            # Convert headers to dict (case-insensitive)
+            headers_dict = {k.lower(): v for k, v in response.headers.items()}
+            content = self.extract_content(response.text, self.url, headers_dict)
             pages.append(content)
             
             # Find and crawl one content page
@@ -306,7 +329,8 @@ class WebCrawler:
             if content_url and content_url != self.url:
                 try:
                     content_response = self.fetch_page(content_url)
-                    content_page = self.extract_content(content_response.text, content_url)
+                    content_headers_dict = {k.lower(): v for k, v in content_response.headers.items()}
+                    content_page = self.extract_content(content_response.text, content_url, content_headers_dict)
                     pages.append(content_page)
                 except Exception as e:
                     # If content page fails, continue with just homepage

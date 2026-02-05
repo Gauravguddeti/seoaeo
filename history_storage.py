@@ -27,7 +27,7 @@ class HistoryStorage:
         """Save analysis result and return ID"""
         # Generate ID based on URL and timestamp
         timestamp = datetime.now().isoformat()
-        analysis_id = result.get('metadata', {}).get('analysis_id', f"hist_{datetime.now().timestamp()}")
+        analysis_id = f"hist_{datetime.now().timestamp()}"
         
         # Prepare data
         history_entry = {
@@ -36,7 +36,7 @@ class HistoryStorage:
             "timestamp": timestamp,
             "seo_score": result['seo']['score'],
             "aeo_score": result['aeo']['score'],
-            "title": result['metadata'].get('title', 'Untitled')
+            "title": result.get('metadata', {}).get('title', 'Untitled')
         }
         
         # Save full result to file

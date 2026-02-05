@@ -1,0 +1,519 @@
+{
+  "url": "https://admissions.kaust.edu.sa/",
+  "analyzed_at": "2026-02-05T15:57:27.858067",
+  "page_info": {
+    "title": "Home",
+    "word_count": 336,
+    "url": "https://admissions.kaust.edu.sa/"
+  },
+  "seo": {
+    "score": 78.9,
+    "grade": "C",
+    "explanation": "Your content is currently missing some essential elements that help search engines understand its relevance and value, which can make it harder for potential customers to find you online. The issues with your meta description, page title, and heading hierarchy are significant because they affect how search engines like Google perceive the quality and organization of your content, ultimately influencing how visible it is to your target audience. By addressing these issues, you can improve the overall visibility and credibility of your online presence, which can lead to more opportunities to reach and engage with your customers.",
+    "checks": [
+      {
+        "name": "Page Title",
+        "status": "warning",
+        "explanation": "Title is too short (4 characters). Search engines may not find it descriptive enough.",
+        "recommendation": "Expand title to at least 30 characters while keeping it under 60.",
+        "score": 50
+      },
+      {
+        "name": "Meta Description",
+        "status": "fail",
+        "explanation": "No meta description found.",
+        "recommendation": "Add a compelling meta description between 120-160 characters that summarizes the page and encourages clicks.",
+        "score": 0
+      },
+      {
+        "name": "H1 Heading",
+        "status": "pass",
+        "explanation": "Page has exactly one H1 heading (ideal).",
+        "recommendation": "H1 count is perfect. Ensure it's descriptive and includes your primary keyword.",
+        "score": 100
+      },
+      {
+        "name": "Heading Hierarchy",
+        "status": "warning",
+        "explanation": "Heading hierarchy issues detected: H4 headings exist without any H3 headings.",
+        "recommendation": "Reorganize headings to follow proper hierarchy: H1 (page title) \u2192 H2 (main sections) \u2192 H3 (subsections) \u2192 H4 (minor sections).",
+        "score": 50
+      },
+      {
+        "name": "Content Length",
+        "status": "warning",
+        "explanation": "Content length (336 words) is adequate but could be more comprehensive.",
+        "recommendation": "Consider expanding to 800+ words with more detailed information, examples, or use cases.",
+        "score": 70
+      },
+      {
+        "name": "Internal Links",
+        "status": "pass",
+        "explanation": "Good internal linking (8 links) helps distribute page authority.",
+        "recommendation": "Internal linking is solid. Ensure anchor text is descriptive and links are contextually relevant.",
+        "score": 100
+      },
+      {
+        "name": "External Links",
+        "status": "pass",
+        "explanation": "Page includes 1 external links to support claims.",
+        "recommendation": "External linking is good. Ensure links go to reputable, relevant sources.",
+        "score": 100
+      },
+      {
+        "name": "Readability",
+        "status": "pass",
+        "explanation": "Paragraph structure supports good readability.",
+        "recommendation": "Readability structure is good. Continue using short paragraphs, bullet points, and clear headings.",
+        "score": 100
+      },
+      {
+        "name": "Page Size",
+        "status": "pass",
+        "explanation": "HTML size (55.9KB) is reasonable.",
+        "recommendation": "Page size is optimized. Continue monitoring as you add content.",
+        "score": 100
+      },
+      {
+        "name": "Keyword Balance",
+        "status": "pass",
+        "explanation": "Keyword usage appears natural without over-optimization.",
+        "recommendation": "Continue using keywords naturally. Focus on topic coverage rather than density.",
+        "score": 100
+      },
+      {
+        "name": "Image Optimization",
+        "status": "pass",
+        "explanation": "All 1 images have alt text - excellent for accessibility and SEO.",
+        "recommendation": "Continue adding descriptive alt text to all images.",
+        "score": 100
+      },
+      {
+        "name": "Social Media (Open Graph)",
+        "status": "warning",
+        "explanation": "Some Open Graph tags present but incomplete.",
+        "recommendation": "Add og:title, og:description, and og:image meta tags for better social media sharing.",
+        "score": 60
+      },
+      {
+        "name": "Structured Data (Schema)",
+        "status": "warning",
+        "explanation": "No structured data detected.",
+        "recommendation": "Add Schema.org markup (JSON-LD) for better search result display. Consider Article, Organization, or FAQ schema based on your content type.",
+        "score": 50
+      },
+      {
+        "name": "HTTPS & Security Headers",
+        "status": "pass",
+        "explanation": "HTTPS with all security headers configured correctly.",
+        "recommendation": "Security headers are well configured.",
+        "score": 100
+      },
+      {
+        "name": "Mobile-Friendliness",
+        "status": "pass",
+        "explanation": "Mobile-friendly configuration detected.",
+        "recommendation": "Ensure responsive design with CSS media queries and mobile testing.",
+        "score": 100
+      },
+      {
+        "name": "Canonical Tag",
+        "status": "pass",
+        "explanation": "Canonical tag is present to prevent duplicate content issues.",
+        "recommendation": "Ensure canonical URL points to the preferred version of this page.",
+        "score": 100
+      }
+    ],
+    "breakdown": {
+      "Page Title": {
+        "raw_score": 50,
+        "weight": 10,
+        "weighted_score": 5.0,
+        "status": "warning"
+      },
+      "Meta Description": {
+        "raw_score": 0,
+        "weight": 6,
+        "weighted_score": 0.0,
+        "status": "fail"
+      },
+      "H1 Heading": {
+        "raw_score": 100,
+        "weight": 5,
+        "weighted_score": 5.0,
+        "status": "pass"
+      },
+      "Heading Hierarchy": {
+        "raw_score": 50,
+        "weight": 5,
+        "weighted_score": 2.5,
+        "status": "warning"
+      },
+      "Content Length": {
+        "raw_score": 70,
+        "weight": 10,
+        "weighted_score": 7.0,
+        "status": "warning"
+      },
+      "Internal Links": {
+        "raw_score": 100,
+        "weight": 5,
+        "weighted_score": 5.0,
+        "status": "pass"
+      },
+      "External Links": {
+        "raw_score": 100,
+        "weight": 5,
+        "weighted_score": 5.0,
+        "status": "pass"
+      },
+      "Readability": {
+        "raw_score": 100,
+        "weight": 8,
+        "weighted_score": 8.0,
+        "status": "pass"
+      },
+      "Page Size": {
+        "raw_score": 100,
+        "weight": 3,
+        "weighted_score": 3.0,
+        "status": "pass"
+      },
+      "Keyword Balance": {
+        "raw_score": 100,
+        "weight": 3,
+        "weighted_score": 3.0,
+        "status": "pass"
+      },
+      "Image Optimization": {
+        "raw_score": 100,
+        "weight": 6,
+        "weighted_score": 6.0,
+        "status": "pass"
+      },
+      "Social Media (Open Graph)": {
+        "raw_score": 60,
+        "weight": 4,
+        "weighted_score": 2.4,
+        "status": "warning"
+      },
+      "Structured Data (Schema)": {
+        "raw_score": 50,
+        "weight": 6,
+        "weighted_score": 3.0,
+        "status": "warning"
+      },
+      "HTTPS & Security Headers": {
+        "raw_score": 100,
+        "weight": 10,
+        "weighted_score": 10.0,
+        "status": "pass"
+      },
+      "Mobile-Friendliness": {
+        "raw_score": 100,
+        "weight": 10,
+        "weighted_score": 10.0,
+        "status": "pass"
+      },
+      "Canonical Tag": {
+        "raw_score": 100,
+        "weight": 4,
+        "weighted_score": 4.0,
+        "status": "pass"
+      }
+    }
+  },
+  "aeo": {
+    "score": 54.5,
+    "grade": "F",
+    "explanation": "Your content is falling short in key areas, which can hinder its ability to effectively communicate with users and provide them with the information they need. The lack of question-style headings and concise answer lengths means that your content may struggle to address user queries in a clear and efficient manner, ultimately affecting the overall user experience. By addressing these issues, you can improve the clarity and usefulness of your content, making it more likely to resonate with your audience and provide them with the information they're looking for.",
+    "checks": [
+      {
+        "name": "Question-Style Headings",
+        "status": "warning",
+        "explanation": "Only 2/9 headings are question-based (22%).",
+        "recommendation": "Increase question-based headings to at least 30%. Structure content around common user questions.",
+        "score": 40,
+        "examples": [
+          "How to Apply",
+          "Why KAUST?"
+        ]
+      },
+      {
+        "name": "Direct Answers",
+        "status": "pass",
+        "explanation": "Found 2 sections with direct answers.",
+        "recommendation": "Good use of direct answers. Ensure every major section starts with a clear, quotable answer.",
+        "score": 80,
+        "examples": [
+          "Learn from world-class scientists  in cutting-edge facilities. KAUST\u2019s innovativ",
+          "A pathway for those with a clear long-term direction, allowing you to gain admis"
+        ]
+      },
+      {
+        "name": "Answer Length",
+        "status": "warning",
+        "explanation": "0/2 FAQ answers are optimal length (40-80 words). Avg: 6 words.",
+        "recommendation": "Aim for 60 words per answer. Too short = incomplete. Too long = won't be used.",
+        "score": 40,
+        "examples": []
+      },
+      {
+        "name": "Definition Clarity",
+        "status": "warning",
+        "explanation": "First paragraph doesn't provide a clear definition. AI engines prefer immediate clarity.",
+        "recommendation": "Start with a direct definition: '[Topic] is [clear definition]'. Then elaborate in following paragraphs.",
+        "score": 40,
+        "examples": [
+          "Learn from world-class scientists  in cutting-edge facilities. KAUST\u2019s innovative, purpose-built environment is the idea"
+        ]
+      },
+      {
+        "name": "Structured Content",
+        "status": "warning",
+        "explanation": "Page includes 1 procedural headings - helps AI extraction.",
+        "recommendation": "Continue using structured formats. Add more step-by-step guides, comparison tables, or bullet lists where relevant.",
+        "score": 30,
+        "examples": []
+      },
+      {
+        "name": "Fluff Detection",
+        "status": "pass",
+        "explanation": "Content is direct and value-focused with minimal fluff.",
+        "recommendation": "Maintain this concise, direct style. AI engines prefer substance over style.",
+        "score": 100,
+        "examples": []
+      }
+    ],
+    "breakdown": {
+      "Question-Style Headings": {
+        "raw_score": 40,
+        "weight": 20,
+        "weighted_score": 8.0,
+        "status": "warning"
+      },
+      "Direct Answers": {
+        "raw_score": 80,
+        "weight": 25,
+        "weighted_score": 20.0,
+        "status": "pass"
+      },
+      "Answer Length": {
+        "raw_score": 40,
+        "weight": 15,
+        "weighted_score": 6.0,
+        "status": "warning"
+      },
+      "Definition Clarity": {
+        "raw_score": 40,
+        "weight": 15,
+        "weighted_score": 6.0,
+        "status": "warning"
+      },
+      "Structured Content": {
+        "raw_score": 30,
+        "weight": 15,
+        "weighted_score": 4.5,
+        "status": "warning"
+      },
+      "Fluff Detection": {
+        "raw_score": 100,
+        "weight": 10,
+        "weighted_score": 10.0,
+        "status": "pass"
+      }
+    },
+    "top_issues": [
+      {
+        "name": "Structured Content",
+        "reason": "Page includes 1 procedural headings - helps AI extraction.",
+        "score": 30
+      },
+      {
+        "name": "Question-Style Headings",
+        "reason": "Only 2/9 headings are question-based (22%).",
+        "score": 40
+      },
+      {
+        "name": "Answer Length",
+        "reason": "0/2 FAQ answers are optimal length (40-80 words). Avg: 6 words.",
+        "score": 40
+      }
+    ]
+  },
+  "crawlability": {
+    "score": 65.0,
+    "grade": "D",
+    "explanation": "Moderate crawlability issues. Some content may not be indexed efficiently.",
+    "checks": [
+      {
+        "name": "Robots.txt File",
+        "status": "warning",
+        "explanation": "No robots.txt file found. Not critical but recommended.",
+        "recommendation": "Create a robots.txt file to guide search engine crawlers. Include sitemap location.",
+        "score": 70
+      },
+      {
+        "name": "XML Sitemap",
+        "status": "warning",
+        "explanation": "No XML sitemap found at common locations (sitemap.xml, sitemap_index.xml).",
+        "recommendation": "Create an XML sitemap and submit it to search engines via Google Search Console and Bing Webmaster Tools.",
+        "score": 60
+      }
+    ],
+    "breakdown": {
+      "Robots.txt File": {
+        "raw_score": 70,
+        "weight": 50,
+        "weighted_score": 35.0,
+        "status": "warning"
+      },
+      "XML Sitemap": {
+        "raw_score": 60,
+        "weight": 50,
+        "weighted_score": 30.0,
+        "status": "warning"
+      }
+    }
+  },
+  "keywords": {
+    "top_keywords": [
+      "kaust",
+      "degree",
+      "research",
+      "learn",
+      "scientists",
+      "innovative",
+      "environment",
+      "experience",
+      "students",
+      "career"
+    ],
+    "keyword_placement": {
+      "kaust": {
+        "in_title": false,
+        "in_h1": true,
+        "in_first_paragraph": true
+      },
+      "degree": {
+        "in_title": false,
+        "in_h1": false,
+        "in_first_paragraph": true
+      },
+      "research": {
+        "in_title": false,
+        "in_h1": false,
+        "in_first_paragraph": true
+      }
+    },
+    "suggested_keywords": [
+      "gain",
+      "begin",
+      "science",
+      "university"
+    ],
+    "primary_focus": "kaust"
+  },
+  "recommendations": [
+    {
+      "type": "SEO",
+      "priority": "high",
+      "name": "Meta Description",
+      "issue": "No meta description found.",
+      "fix": "Add a compelling meta description between 120-160 characters that summarizes the page and encourages clicks.",
+      "score": 0
+    },
+    {
+      "type": "AEO",
+      "priority": "high",
+      "name": "Structured Content",
+      "issue": "Page includes 1 procedural headings - helps AI extraction.",
+      "fix": "Continue using structured formats. Add more step-by-step guides, comparison tables, or bullet lists where relevant.",
+      "score": 30
+    },
+    {
+      "type": "AEO",
+      "priority": "high",
+      "name": "Question-Style Headings",
+      "issue": "Only 2/9 headings are question-based (22%).",
+      "fix": "Increase question-based headings to at least 30%. Structure content around common user questions.",
+      "score": 40
+    },
+    {
+      "type": "AEO",
+      "priority": "high",
+      "name": "Answer Length",
+      "issue": "0/2 FAQ answers are optimal length (40-80 words). Avg: 6 words.",
+      "fix": "Aim for 60 words per answer. Too short = incomplete. Too long = won't be used.",
+      "score": 40
+    },
+    {
+      "type": "AEO",
+      "priority": "high",
+      "name": "Definition Clarity",
+      "issue": "First paragraph doesn't provide a clear definition. AI engines prefer immediate clarity.",
+      "fix": "Start with a direct definition: '[Topic] is [clear definition]'. Then elaborate in following paragraphs.",
+      "score": 40
+    },
+    {
+      "type": "SEO",
+      "priority": "medium",
+      "name": "Page Title",
+      "issue": "Title is too short (4 characters). Search engines may not find it descriptive enough.",
+      "fix": "Expand title to at least 30 characters while keeping it under 60.",
+      "score": 50
+    },
+    {
+      "type": "SEO",
+      "priority": "medium",
+      "name": "Heading Hierarchy",
+      "issue": "Heading hierarchy issues detected: H4 headings exist without any H3 headings.",
+      "fix": "Reorganize headings to follow proper hierarchy: H1 (page title) \u2192 H2 (main sections) \u2192 H3 (subsections) \u2192 H4 (minor sections).",
+      "score": 50
+    },
+    {
+      "type": "SEO",
+      "priority": "medium",
+      "name": "Structured Data (Schema)",
+      "issue": "No structured data detected.",
+      "fix": "Add Schema.org markup (JSON-LD) for better search result display. Consider Article, Organization, or FAQ schema based on your content type.",
+      "score": 50
+    },
+    {
+      "type": "SEO",
+      "priority": "medium",
+      "name": "Social Media (Open Graph)",
+      "issue": "Some Open Graph tags present but incomplete.",
+      "fix": "Add og:title, og:description, and og:image meta tags for better social media sharing.",
+      "score": 60
+    },
+    {
+      "type": "SEO",
+      "priority": "medium",
+      "name": "Content Length",
+      "issue": "Content length (336 words) is adequate but could be more comprehensive.",
+      "fix": "Consider expanding to 800+ words with more detailed information, examples, or use cases.",
+      "score": 70
+    }
+  ],
+  "action_checklist": [
+    "\ud83d\udd34 Critical Actions:",
+    "  \u2022 Meta Description: Add a compelling meta description between 120-160 characters that summarizes the page and encourages clicks.",
+    "  \u2022 Structured Content: Continue using structured formats. Add more step-by-step guides, comparison tables, or bullet lists where relevant.",
+    "  \u2022 Question-Style Headings: Increase question-based headings to at least 30%. Structure content around common user questions.",
+    "  \u2022 Answer Length: Aim for 60 words per answer. Too short = incomplete. Too long = won't be used.",
+    "  \u2022 Definition Clarity: Start with a direct definition: '[Topic] is [clear definition]'. Then elaborate in following paragraphs.",
+    "\n\ud83d\udfe1 Important Improvements:",
+    "  \u2022 Page Title: Expand title to at least 30 characters while keeping it under 60.",
+    "  \u2022 Heading Hierarchy: Reorganize headings to follow proper hierarchy: H1 (page title) \u2192 H2 (main sections) \u2192 H3 (subsections) \u2192 H4 (minor sections).",
+    "  \u2022 Structured Data (Schema): Add Schema.org markup (JSON-LD) for better search result display. Consider Article, Organization, or FAQ schema based on your content type.",
+    "  \u2022 Social Media (Open Graph): Add og:title, og:description, and og:image meta tags for better social media sharing.",
+    "  \u2022 Content Length: Consider expanding to 800+ words with more detailed information, examples, or use cases."
+  ],
+  "before_after_example": {
+    "before": "Learn from world-class scientists  in cutting-edge facilities. KAUST\u2019s innovative, purpose-built environment is the ideal place to become a leader in your field.",
+    "after": "Unlock your potential at KAUST, learning from world-class scientists in cutting-edge facilities, and become a leader in your field with our innovative environment.",
+    "explanation": "The original content was rewritten to fit within the 120-160 character limit of a meta description, while still conveying the main message and benefits of KAUST. This improved version is more concise and compelling, making it more suitable as a meta description that encourages clicks and summarizes the page.",
+    "issue_fixed": "Meta Description"
+  }
+}

@@ -7,3 +7,9 @@ python-dotenv==1.0.0
 groq==0.4.1
 pydantic==2.5.3
 python-multipart==0.0.6
+extruct==0.16.0
+textstat==0.7.3
+selenium==4.17.2
+Pillow==10.2.0
+reportlab==4.0.9
+webdriver-manager==4.0.1

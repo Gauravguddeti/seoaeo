@@ -38,6 +38,9 @@ class ScoringEngine:
             'Image Optimization': config.SEO_WEIGHTS['images'],
             'Social Media (Open Graph)': config.SEO_WEIGHTS['open_graph'],
             'Structured Data (Schema)': config.SEO_WEIGHTS['schema_markup'],
+            'HTTPS & Security Headers': config.SEO_WEIGHTS['https_security'],
+            'Mobile-Friendliness': config.SEO_WEIGHTS['mobile_friendly'],
+            'Canonical Tag': config.SEO_WEIGHTS['canonical_tag'],
         }
         
         total_score = 0
@@ -232,3 +235,67 @@ class ScoringEngine:
                 checklist.append(f"  • {rec['name']}: {rec['fix']}")
         
         return checklist
+    
+    @staticmethod
+    def calculate_crawlability_score(checks: List[Dict]) -> Dict:
+        """
+        Calculate crawlability score from checks
+        Returns score (0-100) and breakdown
+        """
+        if not checks:
+            return {
+                'score': 0,
+                'grade': 'F',
+                'breakdown': {},
+                'explanation': 'No crawlability checks completed'
+            }
+        
+        # Map check names to weight keys
+        check_weights = {
+            'Robots.txt File': config.CRAWLABILITY_WEIGHTS['robots_txt'],
+            'XML Sitemap': config.CRAWLABILITY_WEIGHTS['sitemap'],
+        }
+        
+        total_score = 0
+        total_weight = 0
+        breakdown = {}
+        
+        for check in checks:
+            check_name = check['name']
+            check_score = check['score']
+            weight = check_weights.get(check_name, 0)
+            
+            if weight > 0:
+                weighted_score = (check_score / 100) * weight
+                total_score += weighted_score
+                total_weight += weight
+                
+                breakdown[check_name] = {
+                    'raw_score': check_score,
+                    'weight': weight,
+                    'weighted_score': round(weighted_score, 2),
+                    'status': check['status']
+                }
+        
+        # Normalize to 0-100
+        final_score = round(total_score, 1) if total_weight > 0 else 0
+        grade = ScoringEngine._score_to_grade(final_score)
+        
+        return {
+            'score': final_score,
+            'grade': grade,
+            'breakdown': breakdown,
+            'explanation': ScoringEngine._generate_crawlability_explanation(final_score)
+        }
+    
+    @staticmethod
+    def _generate_crawlability_explanation(score: float) -> str:
+        """Generate human-readable explanation of crawlability score"""
+        if score >= 90:
+            return "Excellent crawlability. Search engines can easily discover and index your content."
+        elif score >= 70:
+            return "Good crawlability with minor issues. Address warnings to optimize indexing."
+        elif score >= 50:
+            return "Moderate crawlability issues. Some content may not be indexed efficiently."
+        else:
+            return "Poor crawlability. Critical issues are preventing proper indexing by search engines."

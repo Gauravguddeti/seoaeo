@@ -49,6 +49,9 @@ class SEOAnalyzer:
         self.check_images()
         self.check_open_graph()
         self.check_schema_markup()
+        self.check_https_security()
+        self.check_mobile_friendly()
+        self.check_canonical_tag()
         
         return {
             'checks': [check.to_dict() for check in self.checks],
@@ -269,7 +272,7 @@ class SEOAnalyzer:
             ))
     
     def check_readability(self):
-        """Basic readability check based on paragraph and sentence structure"""
+        """Check content readability using Flesch-Kincaid scores"""
         paragraphs = self.content.get('paragraphs', [])
         
         if not paragraphs:
@@ -282,24 +285,85 @@ class SEOAnalyzer:
             ))
             return
         
-        # Check average paragraph length
-        avg_para_length = sum(len(p.split()) for p in paragraphs) / len(paragraphs)
+        # Combine paragraphs for analysis
+        full_text = ' '.join(paragraphs)
         
-        if avg_para_length > 100:
+        if len(full_text) < 100:
+            self.checks.append(SEOCheck(
+                name="Readability",
+                status="fail",
+                explanation="Not enough text content to analyze readability.",
+                recommendation="Add more detailed content to provide value to readers.",
+                score=20
+            ))
+            return
+        
+        try:
+            import textstat
+            
+            # Calculate readability scores
+            flesch_score = textstat.flesch_reading_ease(full_text)
+            grade_level = textstat.flesch_kincaid_grade(full_text)
+            
+            # Flesch Reading Ease interpretation:
+            # 60-69: Standard (8th-9th grade) - IDEAL FOR WEB
+            # 50-59: Fairly Difficult (10th-12th grade)
+            # 30-49: Difficult (College)
+            
+            if flesch_score >= 60:
+                status = "pass"
+                score = 100
+                explanation = f"Content is readable (Flesch: {flesch_score:.1f}, Grade: {grade_level:.1f}). Good for web audiences."
+                recommendation = "Readability is good. Keep sentences clear and use simple language where possible."
+            elif flesch_score >= 40:
+                status = "warning"
+                score = 70
+                explanation = f"Content is somewhat difficult (Flesch: {flesch_score:.1f}, Grade: {grade_level:.1f})."
+                recommendation = "Consider simplifying language. Break long sentences, use active voice, and avoid jargon."
+            else:
+                status = "warning"
+                score = 50
+                explanation = f"Content is difficult to read (Flesch: {flesch_score:.1f}, Grade: {grade_level:.1f})."
+                recommendation = "Simplify content significantly. Use shorter sentences, simpler words, and break complex ideas into digestible pieces."
+            
+            self.checks.append(SEOCheck(
+                name="Readability",
+                status=status,
+                explanation=explanation,
+                recommendation=recommendation,
+                score=score
+            ))
+        
+        except ImportError:
+            # Fallback to basic readability check if textstat not available
+            avg_para_length = sum(len(p.split()) for p in paragraphs) / len(paragraphs)
+            
+            if avg_para_length > 100:
+                score = 60
+                status = "warning"
+                explanation = f"Average paragraph length is high ({avg_para_length:.0f} words). Long paragraphs reduce readability."
+                recommendation = "Break long paragraphs into shorter ones (40-60 words ideal). Use bullet points and subheadings."
+            else:
+                score = 100
+                status = "pass"
+                explanation = "Paragraph structure supports good readability."
+                recommendation = "Readability structure is good. Continue using short paragraphs, bullet points, and clear headings."
+            
+            self.checks.append(SEOCheck(
+                name="Readability",
+                status=status,
+                explanation=explanation,
+                recommendation=recommendation,
+                score=score
+            ))
+        except Exception as e:
+            # Error in calculation
             self.checks.append(SEOCheck(
                 name="Readability",
                 status="warning",
-                explanation=f"Average paragraph length is high ({avg_para_length:.0f} words). Long paragraphs reduce readability.",
-                recommendation="Break long paragraphs into shorter ones (40-60 words ideal). Use bullet points and subheadings.",
+                explanation=f"Could not calculate readability: {str(e)[:50]}",
+                recommendation="Ensure content has proper sentence structure for analysis.",
                 score=60
-            ))
-        else:
-            self.checks.append(SEOCheck(
-                name="Readability",
-                status="pass",
-                explanation="Paragraph structure supports good readability.",
-                recommendation="Readability structure is good. Continue using short paragraphs, bullet points, and clear headings.",
-                score=100
             ))
     
     def check_html_size(self):
@@ -457,26 +521,283 @@ class SEOAnalyzer:
             ))
     
     def check_schema_markup(self):
-        """Check for structured data (Schema.org)"""
-        schema_data = self.content.get('schema_markup', {})
-        has_schema = schema_data.get('found', False)
-        schema_types = schema_data.get('types', [])
+        """Check for structured data (Schema.org) with validation"""
+        html_raw = self.content.get('html_raw', '')
+        url = self.content.get('url', '')
         
-        if has_schema and schema_types:
+        # Use extruct to extract and validate structured data
+        try:
+            import extruct
+            
+            metadata = extruct.extract(
+                html_raw,
+                base_url=url,
+                syntaxes=['json-ld', 'microdata', 'rdfa']
+            )
+            
+            # Check JSON-LD
+            json_ld_items = metadata.get('json-ld', [])
+            # Check Microdata
+            microdata_items = metadata.get('microdata', [])
+            # Check RDFa
+            rdfa_items = metadata.get('rdfa', [])
+            
+            total_items = len(json_ld_items) + len(microdata_items) + len(rdfa_items)
+            
+            if total_items == 0:
+                self.checks.append(SEOCheck(
+                    name="Structured Data (Schema)",
+                    status="warning",
+                    explanation="No structured data detected.",
+                    recommendation="Add Schema.org markup (JSON-LD) for better search result display. Consider Article, Organization, or FAQ schema based on your content type.",
+                    score=50
+                ))
+                return
+            
+            # Extract schema types
+            schema_types = []
+            validation_issues = []
+            
+            for item in json_ld_items:
+                if isinstance(item, dict):
+                    item_type = item.get('@type', 'Unknown')
+                    schema_types.append(f"{item_type} (JSON-LD)")
+                    
+                    # Basic validation: check for required @context
+                    if '@context' not in item:
+                        validation_issues.append(f"{item_type} missing @context")
+                    
+                    # Check for common required fields based on type
+                    if item_type == 'Article' and 'headline' not in item:
+                        validation_issues.append("Article missing 'headline'")
+                    if item_type == 'Organization' and 'name' not in item:
+                        validation_issues.append("Organization missing 'name'")
+            
+            for item in microdata_items:
+                if isinstance(item, dict):
+                    item_type = item.get('type', 'Unknown')
+                    schema_types.append(f"{item_type} (Microdata)")
+            
+            for item in rdfa_items:
+                if isinstance(item, dict):
+                    item_type = item.get('@type', 'Unknown')
+                    schema_types.append(f"{item_type} (RDFa)")
+            
+            # Determine score and status
+            if validation_issues:
+                status = "warning"
+                score = 75
+                explanation = f"Structured data found but has issues: {', '.join(validation_issues[:2])}"
+                recommendation = "Fix schema validation errors. Use Google's Rich Results Test to identify all issues."
+            else:
+                status = "pass"
+                score = 100
+                explanation = f"Valid structured data found: {', '.join(schema_types[:3])}"
+                recommendation = "Structured data looks good. Keep it updated and test regularly with Google's Rich Results Test."
+            
             self.checks.append(SEOCheck(
                 name="Structured Data (Schema)",
+                status=status,
+                explanation=explanation,
+                recommendation=recommendation,
+                score=score
+            ))
+        
+        except ImportError:
+            # Fallback if extruct not available (shouldn't happen)
+            schema_data = self.content.get('schema_markup', {})
+            has_schema = schema_data.get('found', False)
+            schema_types = schema_data.get('types', [])
+            
+            if has_schema and schema_types:
+                self.checks.append(SEOCheck(
+                    name="Structured Data (Schema)",
+                    status="pass",
+                    explanation=f"Schema markup detected: {', '.join(schema_types[:3])}.",
+                    recommendation="Validate your schema markup using Google's Rich Results Test tool.",
+                    score=100
+                ))
+            else:
+                self.checks.append(SEOCheck(
+                    name="Structured Data (Schema)",
+                    status="warning",
+                    explanation="No structured data detected.",
+                    recommendation="Add Schema.org markup (JSON-LD) for better search result display. Consider Article, Organization, or FAQ schema based on your content type.",
+                    score=50
+                ))
+        except Exception as e:
+            # If extraction fails, fall back to basic check
+            self.checks.append(SEOCheck(
+                name="Structured Data (Schema)",
+                status="warning",
+                explanation=f"Could not validate structured data: {str(e)[:50]}",
+                recommendation="Check schema markup syntax and validate with Google's Rich Results Test.",
+                score=60
+            ))
+
+    
+    def check_https_security(self):
+        """Check HTTPS and security headers"""
+        url = self.content.get('url', '')
+        headers = self.content.get('headers', {})
+        html_raw = self.content.get('html_raw', '')
+        
+        is_https = url.startswith('https://')
+        has_hsts = 'strict-transport-security' in headers
+        has_xframe = 'x-frame-options' in headers
+        has_csp = 'content-security-policy' in headers
+        
+        # Check for mixed content (http:// resources on https:// page)
+        mixed_content = False
+        if is_https and html_raw:
+            # Look for http:// in src, href attributes (excluding comments)
+            import re
+            http_pattern = r'(?:src|href)=["\']http://[^"\']*["\']'
+            mixed_content = bool(re.search(http_pattern, html_raw, re.IGNORECASE))
+        
+        security_score = 0
+        issues = []
+        recommendations = []
+        
+        if not is_https:
+            status = "fail"
+            issues.append("Site does not use HTTPS")
+            recommendations.append("Migrate to HTTPS immediately - it's a confirmed ranking signal")
+            security_score = 0
+        else:
+            security_score = 50  # Base score for HTTPS
+            
+            if has_hsts:
+                security_score += 20
+            else:
+                issues.append("Missing HSTS header")
+                recommendations.append("Add Strict-Transport-Security header to enforce HTTPS")
+            
+            if has_xframe:
+                security_score += 15
+            else:
+                issues.append("Missing X-Frame-Options header")
+                recommendations.append("Add X-Frame-Options header to prevent clickjacking")
+            
+            if has_csp:
+                security_score += 15
+            else:
+                issues.append("Missing Content-Security-Policy header")
+                recommendations.append("Add CSP header to enhance security")
+            
+            if mixed_content:
+                security_score -= 30
+                issues.append("Mixed content detected (HTTP resources on HTTPS page)")
+                recommendations.append("Update all resources to use HTTPS to avoid browser warnings")
+            
+            if security_score >= 90:
+                status = "pass"
+            elif security_score >= 50:
+                status = "warning"
+            else:
+                status = "fail"
+        
+        explanation = "HTTPS with all security headers configured correctly." if security_score >= 90 else \
+                      f"Security issues: {', '.join(issues)}" if issues else "Partial security configuration."
+        recommendation = recommendations[0] if recommendations else "Security headers are well configured."
+        
+        self.checks.append(SEOCheck(
+            name="HTTPS & Security Headers",
+            status=status,
+            explanation=explanation,
+            recommendation=recommendation,
+            score=security_score
+        ))
+    
+    def check_mobile_friendly(self):
+        """Check mobile-friendliness indicators"""
+        viewport = self.content.get('viewport', {})
+        html_raw = self.content.get('html_raw', '')
+        
+        has_viewport = viewport.get('exists', False)
+        has_width = viewport.get('has_width', False)
+        viewport_content = viewport.get('content', '')
+        
+        # Check for responsive CSS frameworks
+        responsive_indicators = [
+            'bootstrap', 'foundation', 'tailwind', 'bulma',
+            '@media', 'viewport', 'responsive', 'mobile-first'
+        ]
+        has_responsive_css = any(indicator in html_raw.lower() for indicator in responsive_indicators)
+        
+        mobile_score = 0
+        issues = []
+        
+        if not has_viewport:
+            status = "fail"
+            issues.append("No viewport meta tag")
+            mobile_score = 0
+        else:
+            mobile_score = 40
+            
+            if has_width:
+                mobile_score += 30
+            else:
+                issues.append("Viewport tag missing 'width' attribute")
+            
+            if 'width=device-width' in viewport_content.lower():
+                mobile_score += 15
+            else:
+                issues.append("Viewport should use 'width=device-width'")
+            
+            if 'initial-scale' in viewport_content.lower():
+                mobile_score += 10
+            
+            if has_responsive_css:
+                mobile_score += 5
+            else:
+                issues.append("No clear responsive design indicators")
+        
+        if mobile_score >= 80:
+            status = "pass"
+        elif mobile_score >= 40:
+            status = "warning"
+        else:
+            status = "fail"
+        
+        explanation = "Mobile-friendly configuration detected." if mobile_score >= 80 else \
+                      f"Mobile issues: {', '.join(issues)}" if issues else "Partial mobile optimization."
+        recommendation = "Add viewport meta tag: <meta name='viewport' content='width=device-width, initial-scale=1.0'>" if not has_viewport else \
+                        "Ensure responsive design with CSS media queries and mobile testing."
+        
+        self.checks.append(SEOCheck(
+            name="Mobile-Friendliness",
+            status=status,
+            explanation=explanation,
+            recommendation=recommendation,
+            score=mobile_score
+        ))
+    
+    def check_canonical_tag(self):
+        """Check for canonical URL tag"""
+        # Note: Need to add canonical extraction to crawler
+        # For now, check if it exists in raw HTML
+        html_raw = self.content.get('html_raw', '')
+        
+        import re
+        canonical_pattern = r'<link[^>]*rel=["\']canonical["\'][^>]*>'
+        has_canonical = bool(re.search(canonical_pattern, html_raw, re.IGNORECASE))
+        
+        if has_canonical:
+            self.checks.append(SEOCheck(
+                name="Canonical Tag",
                 status="pass",
-                explanation=f"Schema markup detected: {', '.join(schema_types[:3])}.",
-                recommendation="Validate your schema markup using Google's Rich Results Test tool.",
+                explanation="Canonical tag is present to prevent duplicate content issues.",
+                recommendation="Ensure canonical URL points to the preferred version of this page.",
                 score=100
             ))
         else:
             self.checks.append(SEOCheck(
-                name="Structured Data (Schema)",
+                name="Canonical Tag",
                 status="warning",
-                explanation="No structured data detected.",
-                recommendation="Add Schema.org markup (JSON-LD) for better search result display. Consider Article, Organization, or FAQ schema based on your content type.",
-                score=50
+                explanation="No canonical tag found.",
+                recommendation="Add a canonical link tag to specify the preferred URL version and prevent duplicate content penalties.",
+                score=60
             ))
     
     def _generate_summary(self) -> Dict:

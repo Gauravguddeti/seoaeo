@@ -4,27 +4,36 @@ Handles URL analysis requests and serves frontend
 """
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from pydantic import BaseModel, HttpUrl
 from typing import Dict, Optional
 import uuid
 import time
 from datetime import datetime
+from pathlib import Path
+import os
 
 from scraper.crawler import WebCrawler
 from analyzers.seo_analyzer import SEOAnalyzer
 from analyzers.aeo_analyzer import AEOAnalyzer
 from analyzers.keyword_analyzer import KeywordAnalyzer
 from analyzers.scoring import ScoringEngine
+from analyzers.crawlability_analyzer import CrawlabilityAnalyzer
 from ai.groq_client import GroqClient
 from utils import URLValidator, ContentValidator, handle_crawl_errors, handle_ai_errors, ValidationError
 from history_storage import HistoryStorage
+from visual_analyzer import VisualAnalyzer
+from pdf_generator import PDFReportGenerator
 
 app = FastAPI(
     title="SEO + AEO Analyzer",
     description="Analyze websites for SEO and Answer Engine Optimization",
     version="1.0.0"
 )
+
+# Create reports directory
+REPORTS_DIR = Path("reports")
+REPORTS_DIR.mkdir(exist_ok=True)
 
 # In-memory storage for analysis results (in production, use a database)
 analysis_results = {}
@@ -86,6 +95,40 @@ async def analyze_url(request: AnalyzeRequest, background_tasks: BackgroundTasks
     }
 
 
+@app.post("/api/analyze-visual")
+async def analyze_url_visual(request: AnalyzeRequest, background_tasks: BackgroundTasks):
+    """
+    Start visual analysis with screenshot annotation
+    Returns an analysis ID to check status
+    """
+    url = str(request.url)
+    
+    # Validate URL
+    try:
+        url = URLValidator.validate(url)
+    except ValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    analysis_id = str(uuid.uuid4())
+    
+    # Initialize status
+    analysis_results[analysis_id] = {
+        "status": "processing",
+        "progress": "Starting visual analysis...",
+        "started_at": datetime.now().isoformat()
+    }
+    
+    # Run analysis in background
+    background_tasks.add_task(run_visual_analysis, analysis_id, url)
+    
+    return {
+        "analysis_id": analysis_id,
+        "message": "Visual analysis started",
+        "status_url": f"/api/status/{analysis_id}",
+        "report_url": f"/api/report/{analysis_id}"
+    }
+
+
 @app.get("/api/status/{analysis_id}")
 async def get_analysis_status(analysis_id: str):
     """Get the status of an analysis"""
@@ -109,6 +152,14 @@ async def run_analysis(analysis_id: str, url: str):
             crawler = WebCrawler(url)
             pages = crawler.crawl()
         except Exception as e:
+            # Log the actual error for debugging
+            import traceback
+            print(f"\n[CRAWLER ERROR] Type: {type(e).__name__}")
+            print(f"[CRAWLER ERROR] Message: {str(e)}")
+            print(f"[CRAWLER ERROR] URL: {url}")
+            print(f"[CRAWLER ERROR] Traceback:")
+            traceback.print_exc()
+            print("=" * 80)
             raise Exception(handle_crawl_errors(e))
         
         if not pages:
@@ -136,7 +187,12 @@ async def run_analysis(analysis_id: str, url: str):
         aeo_analyzer = AEOAnalyzer(content)
         aeo_results = aeo_analyzer.analyze()
         
-        # Step 3.5: Keyword Analysis
+        # Step 3.5: Crawlability Analysis
+        analysis_results[analysis_id]["progress"] = "Checking crawlability..."
+        crawlability_analyzer = CrawlabilityAnalyzer(url)
+        crawlability_results = crawlability_analyzer.analyze()
+        
+        # Step 3.7: Keyword Analysis
         analysis_results[analysis_id]["progress"] = "Analyzing keywords..."
         keyword_analyzer = KeywordAnalyzer(content)
         keyword_results = keyword_analyzer.analyze()
@@ -145,6 +201,7 @@ async def run_analysis(analysis_id: str, url: str):
         analysis_results[analysis_id]["progress"] = "Calculating scores..."
         seo_score = ScoringEngine.calculate_seo_score(seo_results['checks'])
         aeo_score = ScoringEngine.calculate_aeo_score(aeo_results['checks'])
+        crawlability_score = ScoringEngine.calculate_crawlability_score(crawlability_results['checks'])
         
         # Step 5: Generate Recommendations
         recommendations = ScoringEngine.generate_priority_recommendations(
@@ -203,7 +260,7 @@ async def run_analysis(analysis_id: str, url: str):
         result = {
             "url": url,
             "analyzed_at": datetime.now().isoformat(),
-            "page_info": {
+            "metadata": {
                 "title": content.get('title', ''),
                 "word_count": content.get('word_count', 0),
                 "url": content.get('url', url)
@@ -222,6 +279,13 @@ async def run_analysis(analysis_id: str, url: str):
                 "checks": aeo_results['checks'],
                 "breakdown": aeo_score['breakdown'],
                 "top_issues": aeo_results.get('top_issues', [])
+            },
+            "crawlability": {
+                "score": crawlability_score['score'],
+                "grade": crawlability_score['grade'],
+                "explanation": crawlability_score['explanation'],
+                "checks": crawlability_results['checks'],
+                "breakdown": crawlability_score['breakdown']
             },
             "keywords": keyword_results,
             "recommendations": recommendations,
@@ -247,6 +311,86 @@ async def run_analysis(analysis_id: str, url: str):
         analysis_results[analysis_id]["progress"] = f"Analysis failed: {str(e)}"
 
 
+async def run_visual_analysis(analysis_id: str, url: str):
+    """
+    Run the complete analysis pipeline with visual annotation
+    This runs in the background
+    """
+    visual_analyzer = None
+    
+    try:
+        # Run standard analysis first
+        await run_analysis(analysis_id, url)
+        
+        if analysis_results[analysis_id]["status"] == "failed":
+            return
+        
+        # Get analysis results
+        result = analysis_results[analysis_id]["result"]
+        
+        # Visual annotation
+        analysis_results[analysis_id]["progress"] = "Capturing screenshot..."
+        
+        visual_analyzer = VisualAnalyzer()
+        
+        # Capture screenshot
+        screenshot_path = REPORTS_DIR / f"{analysis_id}_original.png"
+        visual_analyzer.capture_screenshot(url, str(screenshot_path))
+        
+        # Annotate with issues
+        analysis_results[analysis_id]["progress"] = "Annotating issues..."
+        
+        # Collect all issues (fail + warning only)
+        issues_to_annotate = []
+        for check in result['seo']['checks']:
+            if check['status'] in ['fail', 'warning']:
+                issues_to_annotate.append(check)
+        
+        annotated_path = REPORTS_DIR / f"{analysis_id}_annotated.png"
+        visual_analyzer.annotate_issues(
+            str(screenshot_path),
+            issues_to_annotate[:10],  # Limit to top 10 issues
+            str(annotated_path)
+        )
+        
+        # Generate PDF
+        analysis_results[analysis_id]["progress"] = "Generating PDF report..."
+        
+        pdf_path = REPORTS_DIR / f"{analysis_id}_report.pdf"
+        pdf_gen = PDFReportGenerator(str(pdf_path))
+        
+        pdf_gen.add_cover_page(url, result['analyzed_at'])
+        pdf_gen.add_score_summary(
+            result['seo']['score'],
+            result['aeo']['score'],
+            result['crawlability']['score']
+        )
+        pdf_gen.add_annotated_screenshot(str(annotated_path), "Issues highlighted on the webpage")
+        pdf_gen.add_detailed_checks(result['seo']['checks'], "SEO Analysis Details")
+        pdf_gen.add_detailed_checks(result['aeo']['checks'], "AEO Analysis Details")
+        pdf_gen.add_detailed_checks(result['crawlability']['checks'], "Crawlability Analysis")
+        
+        pdf_gen.generate()
+        
+        # Update result with visual report paths
+        result['visual_report'] = {
+            'screenshot': str(screenshot_path),
+            'annotated_screenshot': str(annotated_path),
+            'pdf_report': str(pdf_path)
+        }
+        
+        analysis_results[analysis_id]["result"] = result
+        analysis_results[analysis_id]["progress"] = "Visual analysis complete!"
+        
+    except Exception as e:
+        analysis_results[analysis_id]["status"] = "failed"
+        analysis_results[analysis_id]["error"] = f"Visual analysis failed: {str(e)}"
+        analysis_results[analysis_id]["progress"] = f"Visual analysis failed: {str(e)}"
+    finally:
+        if visual_analyzer:
+            visual_analyzer.cleanup()
+
+
 @app.get("/api/health")
 async def health_check():
     """Health check endpoint"""
@@ -254,6 +398,50 @@ async def health_check():
         "status": "healthy",
         "timestamp": datetime.now().isoformat()
     }
+
+
+@app.get("/api/report/{analysis_id}/pdf")
+async def download_pdf_report(analysis_id: str):
+    """Download PDF report"""
+    if analysis_id not in analysis_results:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    result = analysis_results[analysis_id].get("result")
+    if not result or 'visual_report' not in result:
+        raise HTTPException(status_code=404, detail="Visual report not available. Use /api/analyze-visual endpoint")
+    
+    pdf_path = result['visual_report']['pdf_report']
+    
+    if not os.path.exists(pdf_path):
+        raise HTTPException(status_code=404, detail="PDF report file not found")
+    
+    return FileResponse(
+        pdf_path,
+        media_type='application/pdf',
+        filename=f"seo_report_{analysis_id}.pdf"
+    )
+
+
+@app.get("/api/report/{analysis_id}/image")
+async def get_annotated_image(analysis_id: str):
+    """Get annotated screenshot"""
+    if analysis_id not in analysis_results:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    result = analysis_results[analysis_id].get("result")
+    if not result or 'visual_report' not in result:
+        raise HTTPException(status_code=404, detail="Visual report not available. Use /api/analyze-visual endpoint")
+    
+    image_path = result['visual_report']['annotated_screenshot']
+    
+    if not os.path.exists(image_path):
+        raise HTTPException(status_code=404, detail="Annotated image not found")
+    
+    return FileResponse(
+        image_path,
+        media_type='image/png',
+        filename=f"annotated_{analysis_id}.png"
+    )
 
 
 @app.get("/api/export/{analysis_id}")

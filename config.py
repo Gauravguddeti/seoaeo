@@ -18,19 +18,22 @@ USER_AGENT = "SEO-AEO-Analyzer/1.0 (Educational Tool)"
 
 # SEO Scoring Weights (must sum to 100)
 SEO_WEIGHTS = {
-    "title": 12,
-    "meta_description": 8,
-    "h1_count": 8,
-    "heading_hierarchy": 8,
-    "content_length": 12,
-    "internal_links": 8,
-    "external_links": 8,
+    "title": 10,
+    "meta_description": 6,
+    "h1_count": 5,
+    "heading_hierarchy": 5,
+    "content_length": 10,
+    "internal_links": 5,
+    "external_links": 5,
     "readability": 8,
-    "html_size": 4,
-    "keyword_density": 4,
-    "images": 8,
-    "open_graph": 6,
+    "html_size": 3,
+    "keyword_density": 3,
+    "images": 6,
+    "open_graph": 4,
     "schema_markup": 6,
+    "https_security": 10,  # NEW: Critical for modern SEO
+    "mobile_friendly": 10,  # NEW: Mobile-first indexing
+    "canonical_tag": 4,     # NEW: Duplicate content prevention
 }
 
 # SEO Thresholds
@@ -71,6 +74,12 @@ AEO_THRESHOLDS = {
         "dive deep",
         "let's explore",
     ],
+}
+
+# Crawlability Scoring Weights (separate from SEO, displayed independently)
+CRAWLABILITY_WEIGHTS = {
+    "robots_txt": 50,
+    "sitemap": 50,
 }
 
 # Analysis Configuration
